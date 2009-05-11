@@ -1,0 +1,31 @@
+Parsing Expression Grammar Example
+==================================
+
+This is an example of using Ian Piumarta's PEG library. Given a PEG
+grammar definition, Ian's program will generate C code to parse that
+grammar. The man page for the library describes how it works:
+
+  http://piumarta.com/software/peg/peg.1.html
+
+I had to make some changes to the generated code to compile using C++
+instead of C. The modified peg library is available here:
+
+  http://github.com/doublec/peg
+
+The original source is available from Ian's site:
+
+  http://piumarta.com/software/peg/
+
+The grammar is defined in 'grammar.leg' and builds an abstract syntax
+tree of C++ objects to describe the input expression. This is then
+evaluated. I could have done the evaluation directly in the grammar
+itself but want to extend the example later to do compilation and
+other things where an AST will be useful.
+
+To make things easier I use libgc to handle garbage collection.
+
+Requirements
+============
+
+  libgc - http://www.hpl.hp.com/personal/Hans_Boehm/gc/
+  peg   - http://github.com/doublec/peg

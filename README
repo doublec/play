@@ -1,0 +1,6 @@
+This is a collection of examples of using various libraries. It
+contains:
+
+  peg 
+    An example of using Ian Piumarta's Parsing Expression Grammar
+    library.
