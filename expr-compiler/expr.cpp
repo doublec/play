@@ -28,7 +28,7 @@ Number::Number(float v) :
 
 LIns* Number::compile(LirWriter* writer)
 {
-  writer->insImmf(value);
+  return writer->insImmf(value);
 }
 
 Add::Add(Object* l, Object* r) :
