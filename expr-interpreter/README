@@ -7,15 +7,6 @@ grammar. The man page for the library describes how it works:
 
   http://piumarta.com/software/peg/peg.1.html
 
-I had to make some changes to the generated code to compile using C++
-instead of C. The modified peg library is available here:
-
-  http://github.com/doublec/peg
-
-The original source is available from Ian's site:
-
-  http://piumarta.com/software/peg/
-
 The grammar is defined in 'grammar.leg' and builds an abstract syntax
 tree of C++ objects to describe the input expression. This is then
 evaluated. I could have done the evaluation directly in the grammar
@@ -23,6 +14,19 @@ itself but want to extend the example later to do compilation and
 other things where an AST will be useful.
 
 To make things easier I use libgc to handle garbage collection.
+
+I had to make some changes to the peg generated code to compile using
+C++ instead of C. The modified peg library is available here:
+
+  http://github.com/doublec/peg
+
+It is included in this repository via git's submodule support in the
+'thirdparty/peg' directory.
+
+The original source is available from Ian's site:
+
+  http://piumarta.com/software/peg/
+
 
 Requirements
 ============
