@@ -1,9 +1,15 @@
 This is a collection of examples of using various libraries. It
 contains:
 
-  peg 
-    An example of using Ian Piumarta's Parsing Expression Grammar
-    library.
+  expr-interpreter
+    An expression evaluator. The expression entered is parsed using
+    Ian Piumarta's Parsing Expression Grammar library and then
+    interpreted to get the result. 
+
+  expr-compiler
+    An expression evaluator. The expression entered is parsed using
+    Ian Piumarta's Parsing Expression Grammar library and then
+    compiled to machine code using nanojit.
 
 Some of the examples require third party libraries with modifications,
 or non-release versions. These are included in the 'thirdparty'

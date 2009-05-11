@@ -6,12 +6,12 @@
 #define YYSTYPE Object*
 %}
 
-Expr      = lhs:Product (  "+" rhs:Product  { $$ = new Add(lhs, rhs); }
-                         | "-" rhs:Product  { $$ = new Subtract(lhs, rhs); }
-                        )*
-Product   = lhs:Value   (  "*" rhs:Value    { $$ = new Multiply(lhs, rhs); }
-                         | "/" rhs:Value    { $$ = new Divide(lhs, rhs); }
-                        )* _
+Expr      = lhs:Product (  "+" rhs:Product  { lhs = new Add(lhs, rhs); }
+                         | "-" rhs:Product  { lhs = new Subtract(lhs, rhs); }
+                        )*                  { $$ = lhs }
+Product   = lhs:Value   (  "*" rhs:Value    { lhs = new Multiply(lhs, rhs); }
+                         | "/" rhs:Value    { lhs = new Divide(lhs, rhs); }
+                        )* _                { $$ =lhs }
 Value     = Number _
 Number    = < [0-9]+ ('.' [0-9]+)?>	    { $$ = new Number(atof(yytext)); }
 _         = [ \t]*

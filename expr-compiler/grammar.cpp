@@ -232,12 +232,21 @@ YY_ACTION(void) yy_1_Number(char *yytext, int yyleng)
   yyprintf((stderr, "do yy_1_Number\n"));
    yy = new Number(atof(yytext)); ;
 }
+YY_ACTION(void) yy_3_Product(char *yytext, int yyleng)
+{
+#define rhs yyval[-1]
+#define lhs yyval[-2]
+  yyprintf((stderr, "do yy_3_Product\n"));
+   yy =lhs ;
+#undef rhs
+#undef lhs
+}
 YY_ACTION(void) yy_2_Product(char *yytext, int yyleng)
 {
 #define rhs yyval[-1]
 #define lhs yyval[-2]
   yyprintf((stderr, "do yy_2_Product\n"));
-   yy = new Divide(lhs, rhs); ;
+   lhs = new Divide(lhs, rhs); ;
 #undef rhs
 #undef lhs
 }
@@ -246,7 +255,16 @@ YY_ACTION(void) yy_1_Product(char *yytext, int yyleng)
 #define rhs yyval[-1]
 #define lhs yyval[-2]
   yyprintf((stderr, "do yy_1_Product\n"));
-   yy = new Multiply(lhs, rhs); ;
+   lhs = new Multiply(lhs, rhs); ;
+#undef rhs
+#undef lhs
+}
+YY_ACTION(void) yy_3_Expr(char *yytext, int yyleng)
+{
+#define rhs yyval[-1]
+#define lhs yyval[-2]
+  yyprintf((stderr, "do yy_3_Expr\n"));
+   yy = lhs ;
 #undef rhs
 #undef lhs
 }
@@ -255,7 +273,7 @@ YY_ACTION(void) yy_2_Expr(char *yytext, int yyleng)
 #define rhs yyval[-1]
 #define lhs yyval[-2]
   yyprintf((stderr, "do yy_2_Expr\n"));
-   yy = new Subtract(lhs, rhs); ;
+   lhs = new Subtract(lhs, rhs); ;
 #undef rhs
 #undef lhs
 }
@@ -264,7 +282,7 @@ YY_ACTION(void) yy_1_Expr(char *yytext, int yyleng)
 #define rhs yyval[-1]
 #define lhs yyval[-2]
   yyprintf((stderr, "do yy_1_Expr\n"));
-   yy = new Add(lhs, rhs); ;
+   lhs = new Add(lhs, rhs); ;
 #undef rhs
 #undef lhs
 }
@@ -319,7 +337,7 @@ YY_RULE(int) yy_Product()
   }
   l15:;	  goto l13;
   l14:;	  yypos= yypos14; yythunkpos= yythunkpos14;
-  }  if (!yy__()) goto l12;
+  }  if (!yy__()) goto l12;  yyDo(yy_3_Product, yybegin, yyend);
   yyprintf((stderr, "  ok   %s @ %s\n", "Product", yybuf+yypos));  yyDo(yyPop, 2, 0);
   return 1;
   l12:;	  yypos= yypos0; yythunkpos= yythunkpos0;
@@ -336,7 +354,7 @@ YY_RULE(int) yy_Expr()
   }
   l20:;	  goto l18;
   l19:;	  yypos= yypos19; yythunkpos= yythunkpos19;
-  }
+  }  yyDo(yy_3_Expr, yybegin, yyend);
   yyprintf((stderr, "  ok   %s @ %s\n", "Expr", yybuf+yypos));  yyDo(yyPop, 2, 0);
   return 1;
   l17:;	  yypos= yypos0; yythunkpos= yythunkpos0;

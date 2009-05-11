@@ -1,9 +1,9 @@
 CFLAGS=-g
 LEG=../thirdparty/peg/leg
 
-all: peg expr
+all: $(LEG) expr
 
-peg:
+$(LEG):
 	make -C ../thirdparty/peg
 
 expr: expr.o grammar.o
