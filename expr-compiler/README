@@ -1,0 +1,19 @@
+Expression Evaluator using Pegs and Nanojit
+===========================================
+
+This builds on the expression evaluator in the 'expr-interpreter'
+directory. Instead of interpreting the abstract syntax tree of the
+expression it compiles it to machine code and calls the machine code
+to get the result.
+
+The compilation to machine code uses the Nanojit library. This is
+included as a submodule in the 'thirdparty/nanojit' directory. The
+library was originally by Adobe. It is used in their Tamarin
+ActionScript VM and by Mozilla for their JavaScript JIT.
+
+Requirements
+============
+
+  libgc   - http://www.hpl.hp.com/personal/Hans_Boehm/gc/
+  peg     - http://github.com/doublec/peg
+  nanojit - http://github.com/doublec/nanojit
