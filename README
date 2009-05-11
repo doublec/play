@@ -4,3 +4,13 @@ contains:
   peg 
     An example of using Ian Piumarta's Parsing Expression Grammar
     library.
+
+Some of the examples require third party libraries with modifications,
+or non-release versions. These are included in the 'thirdparty'
+subdirectory. Some of them are imported using 'git submodules'. To
+retrieve this third party libraries you'll need to do the following
+after cloning this repository:
+
+  $ git submodule init
+  $ git submodule update
+
