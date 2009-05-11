@@ -108,7 +108,7 @@ int main() {
 #endif
 
     writer.ins0(LIR_start);
-    writer.ins1(LIR_ret, result->compile(&writer));
+    writer.ins1(LIR_fret, result->compile(&writer));
 
     // Emit a LIR_loop instruction.  It won't be reached, but there's
     // an assertion in Nanojit that trips if a fragment doesn't end with
