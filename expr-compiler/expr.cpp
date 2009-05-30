@@ -31,8 +31,20 @@ LIns* Number::compile(LirWriter* writer)
   return writer->insImmf(value);
 }
 
-Add::Add(Object* l, Object* r) :
+BinOp::BinOp(Object* l, Object* r) :
   lhs(l), rhs(r)
+{
+}
+
+void BinOp::markChildren() 
+{
+  lhs->mark();
+  rhs->mark();
+}
+
+
+Add::Add(Object* l, Object* r) :
+  BinOp(l, r)
 {
 }
 
@@ -44,7 +56,7 @@ LIns* Add::compile(LirWriter* writer)
 }
 
 Subtract::Subtract(Object* l, Object* r) :
-  lhs(l), rhs(r)
+  BinOp(l, r)
 {
 }
 
@@ -56,7 +68,7 @@ LIns* Subtract::compile(LirWriter* writer)
 }
 
 Multiply::Multiply(Object* l, Object* r) :
-  lhs(l), rhs(r)
+  BinOp(l, r)
 {
 }
 
@@ -68,7 +80,7 @@ LIns* Multiply::compile(LirWriter* writer)
 }
 
 Divide::Divide(Object* l, Object* r) :
-  lhs(l), rhs(r)
+  BinOp(l, r)
 {
 }
 
@@ -133,6 +145,8 @@ int main() {
     ExprFunction fn = reinterpret_cast<ExprFunction>(f->code());
     cout << "Result: " << fn() << endl;
   }
+
+  GarbageCollector::GC.collect();
   
   return 0;
 }
