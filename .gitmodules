@@ -4,3 +4,6 @@
 [submodule "thirdparty/nanojit"]
 	path = thirdparty/nanojit
 	url = git://github.com/doublec/nanojit.git
+[submodule "thirdparty/gc"]
+	path = thirdparty/gc
+	url = git://github.com/doublec/gc.git
