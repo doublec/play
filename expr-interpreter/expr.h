@@ -1,9 +1,9 @@
 #if !defined(EXPR_H)
 #define EXPR_H
 
-#include <gc_cpp.h>
+#include "gc.h"
 
-class Object : public gc
+class Object : public GCObject
 {
  public:
   virtual float eval() = 0;
@@ -19,42 +19,36 @@ class Number : public Object
   virtual float eval(); 
 };
 
-class Add : public Object 
+class BinOp : public Object
 {
  public:
   Object* lhs;
   Object* rhs;
-  
+
+  BinOp(Object* l, Object* r);
+  virtual void markChildren();
+};
+
+class Add : public BinOp 
+{
 public:
   Add(Object* l, Object* r);
   virtual float eval();
 };
 
-class Subtract : public Object {
- public:
-  Object* lhs;
-  Object* rhs;
-  
+class Subtract : public BinOp {
  public:
   Subtract(Object* l, Object* r);
   virtual float eval();
 };
 
-class Multiply : public Object {
- public:
-  Object* lhs;
-  Object* rhs;
-  
+class Multiply : public BinOp {
  public:
   Multiply(Object* l, Object* r);
   virtual float eval();
 };
 
-class Divide : public Object {
- public:
-  Object* lhs;
-  Object* rhs;
-  
+class Divide : public BinOp {
  public:
   Divide(Object* l, Object* r);
   virtual float eval();

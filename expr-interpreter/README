@@ -9,7 +9,8 @@ evaluated. I could have done the evaluation directly in the grammar
 itself but want to extend the example later to do compilation and
 other things where an AST will be useful.
 
-To make things easier I use libgc to handle garbage collection.
+To make things easier I use 'gc' to handle garbage collection. This
+is included in the thirdparty subdirectory as a git submodule.
 
 I use Ian Piumarta's PEG library. Given a PEG grammar definition,
 Ian's program will generate C code to parse that grammar. The man page

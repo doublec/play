@@ -1,18 +1,23 @@
-CFLAGS=-g
 LEG=../thirdparty/peg/leg
+GCDIR=../thirdparty/gc
+GCLIB=$(GCDIR)/libgc.a
+CFLAGS=-g -I$(GCDIR)
 
 all: $(LEG) expr
 
 $(LEG):
 	make -C ../thirdparty/peg
 
-expr: expr.o grammar.o
-	g++ $(CFLAGS) -o expr expr.o grammar.o -lgc -lgccpp
+$(GCLIB):
+	make -C $(GCDIR)
 
-expr.o: expr.cpp expr.h
+expr: expr.o grammar.o $(GCLIB)
+	g++ $(CFLAGS) -o expr expr.o grammar.o $(GCLIB)
+
+expr.o: expr.cpp expr.h $(GCDIR)/gc.h
 	g++ $(CFLAGS) -c -o expr.o expr.cpp
 
-grammar.o: grammar.cpp expr.h
+grammar.o: grammar.cpp expr.h $(GCDIR)/gc.h
 	g++ $(CFLAGS) -c -o grammar.o grammar.cpp
 
 grammar.cpp: grammar.leg

@@ -14,8 +14,19 @@ float Number::eval()
   return value;
 }
 
-Add::Add(Object* l, Object* r) :
+BinOp::BinOp(Object* l, Object* r) :
   lhs(l), rhs(r)
+{
+}
+
+void BinOp::markChildren() 
+{
+  lhs->mark();
+  rhs->mark();
+}
+
+Add::Add(Object* l, Object* r) :
+  BinOp(l, r)
 {
 }
 
@@ -24,8 +35,9 @@ float Add::eval()
   return lhs->eval() + rhs->eval();
 }
 
+
 Subtract::Subtract(Object* l, Object* r) :
-  lhs(l), rhs(r)
+  BinOp(l, r)
 {
 }
 
@@ -35,7 +47,7 @@ float Subtract::eval()
 }
 
 Multiply::Multiply(Object* l, Object* r) :
-  lhs(l), rhs(r)
+  BinOp(l, r)
 {
 }
 
@@ -45,7 +57,7 @@ float Multiply::eval()
 }
 
 Divide::Divide(Object* l, Object* r) :
-  lhs(l), rhs(r)
+  BinOp(l, r)
 {
 }
 
@@ -58,6 +70,8 @@ int main() {
   Object* result;
   while ((result = parse()))
     cout << "Result: " << result->eval() << endl;
-  
+
+  GarbageCollector::GC.collect();
+
   return 0;
 }
