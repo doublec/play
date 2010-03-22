@@ -1,8 +1,8 @@
 LEG=../thirdparty/peg/leg
-NANOJIT=../thirdparty/nanojit/libnanojit.a
+NANOJIT=../thirdparty/nanojit-central
 GCDIR=../thirdparty/gc
 GCLIB=$(GCDIR)/libgc.a
-CFLAGS=-g -I../thirdparty --include ../thirdparty/nanojit/mozilla-config.h
+CFLAGS=-g -I$(NANOJIT) -I$(NANOJIT)/build -I../thirdparty -DHAVE_CONFIG_H -DNANOJIT_CENTRAL -Wno-invalid-offsetof -Wno-variadic-macros -Werror
 
 all: $(LEG) expr
 
@@ -12,13 +12,18 @@ $(LEG):
 $(GCLIB):
 	make -C $(GCDIR)
 
-$(NANOJIT):
-	make -C `(dirname $(NANOJIT))`
+$(NANOJIT)/configure: $(NANOJIT)/configure.in $(NANOJIT)/config.h.in $(NANOJIT)/Makefile.in
+	cd $(NANOJIT) && autoconf
+	mkdir -p $(NANOJIT)/build
+	cd $(NANOJIT)/build && ../configure
 
-expr: expr.o grammar.o $(GCLIB) $(NANOJIT)
-	g++ $(CFLAGS) -o expr expr.o grammar.o $(NANOJIT) $(GCLIB)
+$(NANOJIT)/build/libnanojit.a: $(NANOJIT)/configure
+	cd $(NANOJIT)/build && make 
 
-expr.o: expr.cpp expr.h $(GCDIR)/gc.h
+expr: expr.o grammar.o $(GCLIB) $(NANOJIT)/build/libnanojit.a
+	g++ $(CFLAGS) -o expr expr.o grammar.o $(NANOJIT)/build/libnanojit.a $(GCLIB)
+
+expr.o: expr.cpp expr.h $(GCDIR)/gc.h $(NANOJIT)/build/libnanojit.a
 	g++ $(CFLAGS) -c -o expr.o expr.cpp
 
 grammar.o: grammar.cpp expr.h $(GCDIR)/gc.h

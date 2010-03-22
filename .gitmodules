@@ -1,9 +1,9 @@
 [submodule "thirdparty/peg"]
 	path = thirdparty/peg
 	url = git://github.com/doublec/peg.git
-[submodule "thirdparty/nanojit"]
-	path = thirdparty/nanojit
-	url = git://github.com/doublec/nanojit.git
 [submodule "thirdparty/gc"]
 	path = thirdparty/gc
 	url = git://github.com/doublec/gc.git
+[submodule "thirdparty/nanojit-central"]
+	path = thirdparty/nanojit-central
+	url = git://github.com/doublec/nanojit-central.git

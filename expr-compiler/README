@@ -7,13 +7,13 @@ expression it compiles it to machine code and calls the machine code
 to get the result.
 
 The compilation to machine code uses the Nanojit library. This is
-included as a submodule in the 'thirdparty/nanojit' directory. The
-library was originally by Adobe. It is used in their Tamarin
+included as a submodule in the 'thirdparty/nanojit-central' directory.
+The library was originally by Adobe. It is used in their Tamarin
 ActionScript VM and by Mozilla for their JavaScript JIT.
 
 Requirements
 ============
 
-  c       - http://github.com/doublec/gc
-  peg     - http://github.com/doublec/peg
-  nanojit - http://github.com/doublec/nanojit
+  gc              - http://github.com/doublec/gc
+  peg             - http://github.com/doublec/peg
+  nanojit-central - http://github.com/doublec/nanojit-central

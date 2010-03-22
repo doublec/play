@@ -6,20 +6,51 @@
 using namespace std;
 using namespace nanojit;
 
-#if defined(NJ_VERBOSE)
-void
-nanojit::LirNameMap::formatGuard(LIns *i, char *out)
+/* Allocator SPI implementation. */
+
+void*
+nanojit::Allocator::allocChunk(size_t nbytes)
 {
+    void *p = malloc(nbytes);
+    if (!p)
+        exit(1);
+    return p;
+}
+
+void
+nanojit::Allocator::freeChunk(void *p) {
+    free(p);
+}
+
+void
+nanojit::Allocator::postReset() {
+}
+
+/* LIR SPI implementation */
+
+int
+nanojit::StackFilter::getTop(LIns*)
+{
+    return 0;
+}
+
+#if defined NJ_VERBOSE
+void
+nanojit::LInsPrinter::formatGuard(InsBuf *buf, LIns *ins)
+{
+  // This example doesn't use guards so have a do-nothing implementation here
+  if (buf->len > 0)
+    *buf->buf = '\0';
+}
+
+void
+nanojit::LInsPrinter::formatGuardXov(InsBuf *buf, LIns *ins)
+{
+  // This example doesn't use guards so have a do-nothing implementation here
+  if (buf->len > 0)
+    *buf->buf = '\0';
 }
 #endif
-
-void nanojit::Fragment::onDestroy() {
-}
-
-int nanojit::StackFilter::getTop(LInsp guard)
-{
-  return 0;
-}
 
 Number::Number(float v) :
   value(v)
@@ -91,57 +122,56 @@ LIns* Divide::compile(LirWriter* writer)
   return writer->ins2(LIR_fdiv, a, b);
 }
 
+SideExit* createSideExit(Fragment* fragment, Allocator& allocator)
+{
+    SideExit* exit = new (allocator) SideExit();
+    memset(exit, 0, sizeof(SideExit));
+    exit->from = fragment;
+    exit->target = NULL;
+    return exit;
+}
+
+GuardRecord* createGuardRecord(SideExit *exit, Allocator& allocator)
+{
+    GuardRecord *rec = new (allocator) GuardRecord;
+    memset(rec, 0, sizeof(GuardRecord));
+    rec->exit = exit;
+    exit->addGuard(rec);
+    return rec;
+}
+
 int main() {
-  // Setup nanojit objects
-  avmplus::GC *gc = new avmplus::GC;
   avmplus::AvmCore core;
+  LogControl log;
+  CodeAlloc code_allocator;
+  Allocator allocator;
+  Assembler assembler(code_allocator, allocator, allocator, &core, &log, nanojit::AvmCore::config);
+  LirBuffer *buf = new (allocator) LirBuffer(allocator);
 #ifdef DEBUG
-  core.config.verbose = 1; // Show disassembly of generated traces.
+  log.lcbits = 0; //LC_ReadLIR | LC_Assembly | LC_RegAlloc | LC_Activation;
+  buf->printer = new (allocator) LInsPrinter(allocator);
 #endif
-
-  Fragmento *fragmento = new (gc) Fragmento(&core, 20);
-  LirBuffer *buf = new (gc) LirBuffer(fragmento, NULL);
-
   Object* result;
   while ((result = parse())) {
     // Create a Fragment to hold some native code.
-    Fragment *f = new (gc) Fragment(NULL);
+    Fragment *f = new (allocator) Fragment(NULL, 0);
     f->lirbuf = buf;
-    f->root = f;
   
     // Create a LIR writer, with verbose output if DEBUG.
-    LirBufWriter writer0(buf);
-#ifdef DEBUG
-    fragmento->labels = new (gc) LabelMap(&core, NULL);
-    buf->names = new (gc) LirNameMap(gc, NULL, fragmento->labels);
-    VerboseWriter writer(gc, &writer0, buf->names);
-#else
-    LirBufWriter& writer = writer0;
-#endif
+    LirBufWriter* writer = new (allocator) LirBufWriter(buf, nanojit::AvmCore::config);
 
-    writer.ins0(LIR_start);
-    writer.ins1(LIR_fret, result->compile(&writer));
-
-    // Emit a LIR_loop instruction.  It won't be reached, but there's
-    // an assertion in Nanojit that trips if a fragment doesn't end with
-    // a guard (a bug in Nanojit). 
-    LIns *rec_ins = writer0.insSkip(sizeof(GuardRecord) + sizeof(SideExit));
-    GuardRecord *guard = (GuardRecord *) rec_ins->payload();
-    memset(guard, 0, sizeof(*guard));
-    SideExit *exit = (SideExit *)(guard + 1);
-    guard->exit = exit;
-    guard->exit->target = f;
-    f->lastIns = writer.insGuard(LIR_loop, writer.insImm(1), rec_ins);
+    writer->ins0(LIR_start);
+    f->lastIns = writer->ins1(LIR_fret, result->compile(writer));
 
     // Compile the fragment.
-    compile(fragmento->assm(), f);
-    if (fragmento->assm()->error() != None) {
+    assembler.compile(f, allocator, false verbose_only(, buf->printer)); 
+    if (assembler.error() != None) {
       cerr << "error compiling fragment" << endl;
       return 0;
     }
 
     // Call the compiled function.
-    typedef JS_FASTCALL float (*ExprFunction)();
+    typedef FASTCALL float (*ExprFunction)();
     ExprFunction fn = reinterpret_cast<ExprFunction>(f->code());
     cout << "Result: " << fn() << endl;
   }
